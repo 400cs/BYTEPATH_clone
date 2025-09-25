@@ -1,13 +1,15 @@
 function love.load()
-
+	frame = 0
+	love.window.setMode(800, 600, {vsync = false})
 end
 
 function love.update(dt)
-
+	frame = frame + 1
+	print(dt)
 end
 
 function love.draw()
-
+	love.graphics.print("Frame: "..frame, 400, 300)
 end
 
 function love.run()
