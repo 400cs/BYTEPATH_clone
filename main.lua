@@ -1,10 +1,14 @@
 Object = require 'libraries/classic/classic' --global var for class library
+Input = require 'libraries/boipushy/Input' --global var for input library
 
 function love.load()
 	local object_files = {}
 	recursiveEnumerate('objects', object_files)
 	requireFiles(object_files)
 	hyperCircle = HyperCircle(400, 300, 50, 10, 120)
+	
+    input = Input()
+    input:bind('mouse1', function() print(love.math.random()) end)
 end
 
 function recursiveEnumerate(folder, file_list)

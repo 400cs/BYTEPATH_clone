@@ -299,4 +299,14 @@ _G[class_name] = require(file)
 ```
 Another thing that can be done here is that unload a class if it was previously loaded. This might never be useful but it's useful to know that it can be done: by calling ```package.loaded[file] = nil``` before the ```require(file)``` call, we can clear the cache that holds all files that have been previously loaded and force a full reload of that file. This is useful in a number of situations, like if we wanted to implement hot-reloading of our code.
 
-###
+### 15. Suppose we have the following code:
+```lua
+function love.load()
+    input = Input()
+    input:bind('mouse1', function() print(love.math.random()) end)
+end
+```
+Will anything happen when mouse1 is pressed? What about when it is released? And held down?
+
+When mouse1 is pressed, it will print a random number in the console/terminal. released? No. And held down? No, prints once even after holding the key down.
+
