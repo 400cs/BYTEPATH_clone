@@ -310,3 +310,126 @@ Will anything happen when mouse1 is pressed? What about when it is released? And
 
 When mouse1 is pressed, it will print a random number in the console/terminal. released? No. And held down? No, prints once even after holding the key down.
 
+**Author's Answer:** For this question all that really has to be done is to test the code and see that whenever ```mouse1``` is pressed (not released nor held) the function runs. This is an alternate thing you can do with the bind function, which is to just bind a key to a function that will be executed when the key is pressed.
+
+###  16. Bind the keypad ```+``` key to an action named ```add```, then increment the value of a variable named ```sum``` (which starts at 0) by 1 every ```0.25``` seconds when the ```add``` action key is held down. Print the value of ```sum``` to the console every time it is incremented.
+
+```lua
+function love.load()
+    input = Input()
+    sum = 0
+    input:bind('+', 'add')
+end
+
+function love.update(dt)
+    if (input:down('add', 0.25)) then 
+        sum = sum + 1
+        print(sum)
+    end
+end
+```
+almost correct: ```+``` is supposed to be ```kp+```.
+
+**Author's Answer:** For this question we need to first bind the keypad + key to an action named add. To do that we need to figure out what's the string used to represent keypad +. The github page links to this page for key constants and says that for the keyboard they are the same, which means that keypad ```+``` is ```kp+```. And so the code looks like this:
+
+ 
+```lua
+function love.load()
+    input = Input()
+    input:bind('kp+', 'add')
+end
+```
+Then the question asks to increment a sum variable every 0.25 seconds when the add action key is held down and to print the result to the console. This is simply an application of the pressRepeat function:
+
+ 
+```lua
+function love.load()
+    input = Input()
+    input:bind('kp+', 'add')
+    sum = 0
+end
+
+
+function love.update(dt)
+    if input:pressRepeat('add', 0.25) then
+        sum = sum + 1
+        print(sum)
+    end
+end
+```
+
+### 17. Can multiple keys be bound to the same action? If not, why not? And can multiple actions be bound to the same key? If not, why not?
+Yes, multiple keys can be bound to the same action. Just bind that key to the action using input:bind(). No, multiple actions can not be bound to the same key, because the bind function replaces the action for a key on each call to bind(). (self.functions[key] = action;)
+I was wrong. Multiple actions caan be bound to the same key.
+
+**Author's Answer:** Multiple keys can be bound to the same action. What will happen when an action is checked for is that all the keys will be checked for at the same time, so if any of the keys was pressed an event will be generated for that action. Similarly, multiple actions can be bound to the same key and whenever the key is pressed, all actions bound to it will have an event generated for them.
+
+### 18. If you have a gamepad, bind its DPAD buttons(fup, fdown...) to actions up, left, right and down and then print the name of the action to the console once each button is pressed.
+
+```lua
+function love.load()
+    input = Input()
+    input:bind('fup', 'up')
+    input:bind('fleft', 'left')
+    input:bind('fright', 'right')
+    input:bind('fdown', 'down')
+end
+
+function love.update(dt)
+    if (input:pressed('fup')) then print("up") end
+    if (input:pressed('fleft')) then print("left") end
+    if (input:pressed('fright')) then print("right") end
+    if (input:pressed('fdown')) then print("down") end
+end
+```
+correct
+
+**Author's Answer:** same 
+
+### 19. If you have a gamepad, bind one of its ```trigger``` buttons (l2, r2) to an action named trigger. Trigger buttons return a value from 0 to 1 instead of a boolean saying if its pressed or not. How would you get this value?
+You could check if the value returned from pressing the trigger is greater than 0.5 in order to set it to true else it's false.
+
+I kind of had the right idea, but used the wrong function.
+
+**Author's Answer:** Here we see how values that are not booleans can be used. In the case of triggers, ```down``` can be used to access the value which will be somewhere between 0 and 1, depending on how hard the trigger is being pressed. 
+```lua
+function love.load()
+    ...
+    input:bind('l2', 'trigger')
+end
+
+​
+
+function love.update(dt)
+    ...
+    local left_trigger_value = input:down('trigger')
+    print(left_trigger_value)
+end
+```
+
+### 20. Repeat the same as the previous exercise but for the left and right stick's horizontal and vertical position.
+Same as the answer for 19
+```lua
+function love.load()
+    ...
+    input:bind('leftx', 'left_horizontal')
+    input:bind('lefty', 'left_vertical')
+    input:bind('rightx', 'right_horizontal')
+    input:bind('righty', 'right_vertical')
+end
+
+​
+
+function love.update(dt)
+    ...
+    local left_stick_horizonal = input:down('left_horizontal')
+    local left_stick_vertical = input:down('left_vertical')
+    local right_stick_horizontal = input:down('right_horizontal')
+    local right_stick_vertical = input:down('right_vertical')
+    print(left_stick_value, left_stick_vertical)
+    print(right_stick_horizontal, right_stick_vertical)
+end
+```
+
+**Author's Answer:** same
+
