@@ -14,7 +14,6 @@ function HyperCircle:draw()
     HyperCircle.super.draw(self)
     love.graphics.setLineWidth(self.line_width)
     love.graphics.circle("line", self.x, self.y, self.outer_radius)
-    love.graphics.setLineWidth(1)
 end
 
 return HyperCircle

@@ -1,15 +1,7 @@
 Object = require 'libraries/classic/classic' --global var for class library
 Input = require 'libraries/boipushy/Input' --global var for input library
+Timer = require 'libraries/chrono/Timer' --global var for timer library
 
-function love.load()
-	local object_files = {}
-	recursiveEnumerate('objects', object_files)
-	requireFiles(object_files)
-	hyperCircle = HyperCircle(400, 300, 50, 10, 120)
-	
-    input = Input()
-    input:bind('mouse1', function() print(love.math.random()) end)
-end
 
 function recursiveEnumerate(folder, file_list)
 	local items = love.filesystem.getDirectoryItems(folder)
@@ -46,12 +38,34 @@ function requireFiles(files)
     end
 end
 
+function love.load()
+	local object_files = {}
+	recursiveEnumerate('objects', object_files)
+	requireFiles(object_files)
+
+	--hyperCircle = HyperCircle(400, 300, 50, 10, 120)
+	rect_1 = {x = 400, y = 300, w = 50, h = 200}
+    rect_2 = {x = 400, y = 300, w = 200, h = 50}
+	
+    input = Input()
+    input:bind('mouse1', function() print(love.math.random()) end)
+
+	chronotimer = Timer()
+	for i = 1, 10 do
+		chronotimer:after(0.5*i, function() print(love.math.random()) end)
+	end
+
+end
+
 function love.update(dt)
-	hyperCircle:update(dt)
+	--hyperCircle:update(dt)
+	chronotimer:update(dt)
 end
 
 function love.draw()
-	hyperCircle:draw()
+	--hyperCircle:draw()
+	love.graphics.rectangle('fill', rect_1.x - rect_1.w/2, rect_1.y - rect_1.h/2, rect_1.w, rect_1.h)
+    love.graphics.rectangle('fill', rect_2.x - rect_2.w/2, rect_2.y - rect_2.h/2, rect_2.w, rect_2.h)
 end
 
 function love.run()

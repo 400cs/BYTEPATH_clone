@@ -112,7 +112,7 @@ end
 ### What is the value of counter_table.value? Why does the increment function receive an argument named self? Could this argument be named something else? And what is the variable that self represents in this example?
 counter_table.value is 2. ```increment``` function receive an argument named ```self```, so that the function uses the attributes of the tables (```value```) that calls it . If the argument is named something else than the argument is refering to something else bysides the table calling it, i.e. another table that isn't the the table calling ```increment()```. ```self``` represents the table returned from ```createCounterTable()```.
 
-**Author's Answer:**This question expands on the previous question to test if you really understood the idea that tables can have functions defined in them that will change the table's own attributes.
+**Author's Answer:** This question expands on the previous question to test if you really understood the idea that tables can have functions defined in them that will change the table's own attributes.
 
 The value of ```counter_table.value``` is initially what it was defined to be, which is 1. And then after the ```counter_table:increment()``` call it got changed to 2. ```counter_table:increment()``` is the same as ```counter_table.increment(counter_table)```, which means that the self variable in that function definition, in this example, corresponds to the counter_table variable itself, which is why counter_table.value was able to be incremented in the first place.
 
@@ -376,10 +376,10 @@ function love.load()
 end
 
 function love.update(dt)
-    if (input:pressed('fup')) then print("up") end
-    if (input:pressed('fleft')) then print("left") end
-    if (input:pressed('fright')) then print("right") end
-    if (input:pressed('fdown')) then print("down") end
+    if (input:pressed('up')) then print("up") end
+    if (input:pressed('left')) then print("left") end
+    if (input:pressed('right')) then print("right") end
+    if (input:pressed('down')) then print("down") end
 end
 ```
 correct
@@ -426,10 +426,79 @@ function love.update(dt)
     local left_stick_vertical = input:down('left_vertical')
     local right_stick_horizontal = input:down('right_horizontal')
     local right_stick_vertical = input:down('right_vertical')
-    print(left_stick_value, left_stick_vertical)
+    print(left_stick_horizonal, left_stick_vertical)
     print(right_stick_horizontal, right_stick_vertical)
 end
 ```
 
 **Author's Answer:** same
 
+### 21. Using only a ```for``` loop and one declaration of the ```after``` function inside that loop, print 10 random numbers to the screen with an interval of 0.5 seconds between each print.
+
+```lua
+Timer = require 'libraries/chrono/Timer'
+
+chronotimer = Timer()
+	for i = 1, 10 do
+		chronotimer:after(0.5*i, function() print(love.math.random()) end)
+	end
+```
+
+**Author's Answer:** For this question we need to print 10 random numbers with a 0.5 interval between each print using only a for and an after call inside that loop. The thing to do on instinct is something like this:
+
+```lua
+for i = 1, 10 do
+
+    timer:after(0.5, function() print(love.math.random()) end)
+
+end
+```
+But this will print 10 numbers exactly at the same time after an initial interval of 0.5 seconds, which is not what we wanted. What we did here is just call timer:after 10 times. Another thing one might try is to somehow chain after calls together like this:
+
+ 
+```lua
+timer:after(0.5, function()
+
+    print(love.math.random())
+
+    timer:after(0.5, function()
+
+        print(love.math.random())
+
+        ...
+
+    end)
+
+end)
+```
+And then somehow translate that into a for, but there's no reasonable way to do that. The solution lies in figuring out that if you use the i index from the loop and multiply that by the 0.5 delay, you'll get delays of 0.5, then 1, then 1.5, ... until you get to the last value of 5. And that looks like this:
+
+ 
+```lua
+for i = 1, 10 do
+
+    timer:after(0.5*i, function() print(love.math.random()) end)
+
+end
+```
+The first number is printed after 0.5 seconds and then the others follow. If we needed the first number to printed immediately (instead of with an initial 0.5 seconds delay) then we needed to use i-1 instead of i.
+
+### 22. Suppose we have the following code:
+```lua
+function love.load()
+    timer = Timer()
+    rect_1 = {x = 400, y = 300, w = 50, h = 200}
+    rect_2 = {x = 400, y = 300, w = 200, h = 50}
+end
+
+function love.update(dt)
+    timer:update(dt)
+end
+
+function love.draw()
+    love.graphics.rectangle('fill', rect_1.x - rect_1.w/2, rect_1.y - rect_1.h/2, rect_1.w, rect_1.h)
+    love.graphics.rectangle('fill', rect_2.x - rect_2.w/2, rect_2.y - rect_2.h/2, rect_2.w, rect_2.h)
+end
+```
+Using only the tween function, tween the w attribute of the first rectangle over 1 second using the in-out-cubic tween mode. After that is done, tween the h attribute of the second rectangle over 1 second using the in-out-cubic tween mode. After that is done, tween both rectangles back to their original attributes over 2 seconds using the in-out-cubic tween mode. It should look like
+[this:](https://camo.githubusercontent.com/95f1d4a1b3b5a7e12d99555c3a227e610c88226d5331d6fddbcb288c0f4b5904/68747470733a2f2f692e696d6775722e636f6d2f514f5074344a632e676966)
