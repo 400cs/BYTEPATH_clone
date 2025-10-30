@@ -502,3 +502,342 @@ end
 ```
 Using only the tween function, tween the w attribute of the first rectangle over 1 second using the in-out-cubic tween mode. After that is done, tween the h attribute of the second rectangle over 1 second using the in-out-cubic tween mode. After that is done, tween both rectangles back to their original attributes over 2 seconds using the in-out-cubic tween mode. It should look like
 [this:](https://camo.githubusercontent.com/95f1d4a1b3b5a7e12d99555c3a227e610c88226d5331d6fddbcb288c0f4b5904/68747470733a2f2f692e696d6775722e636f6d2f514f5074344a632e676966)
+
+```lua
+    chronotimer:tween(1, rect_1, {w = 0}, 'in-out-cubic')
+	chronotimer:after(1, function()
+		chronotimer:tween(1, rect_2, {h = 0}, 'in-out-cubic')
+	end)
+	chronotimer:after(2, function()
+		chronotimer:tween(2, rect_1, {w = 50}, 'in-out-cubic')
+		chronotimer:tween(2, rect_2, {h = 50}, 'in-out-cubic')
+	end)
+```
+I didn't realize the fuction param could be used for chaining tweens.
+
+**Author's Answer:** This question asks for a bunch of tweens that happens in sequence after one another. This is just a simple application of the tween function using the optional last argument to chain tweens together. That looks like this:
+
+```lua
+timer:tween(1, rect_1, {w = 0}, 'in-out-cubic', function()
+
+    timer:tween(1, rect_2, {h = 0}, 'in-out-cubic', function()
+
+        timer:tween(2, rect_1, {w = 50}, 'in-out-cubic')
+
+        timer:tween(2, rect_2, {h = 50}, 'in-out-cubic')
+
+    end)
+
+end)
+```
+
+### 23. For this exercise you should create an HP bar. Whenever the user presses the d key the HP bar should simulate damage taken. It should look like this:
+As you can see there are two layers to this HP bar, and whenever damage is taken the top layer moves faster while the background one lags behind for a while.
+![alt text](images/image.png)
+![alt text](images/image-1.png)
+
+```lua
+function love.load()
+	
+	hp_bar_f = {x = 400, y = 300, w = 200, h = 50}
+    hp_bar_b = {x = 400, y = 300, w = 200, h = 50}
+
+	set_x_fg = hp_bar_f.x - hp_bar_f.w/2
+	set_x_bg = hp_bar_b.x - hp_bar_b.w/2
+	
+    input = Input()
+    input:bind('d', 'damage')
+
+	chronotimer = Timer()
+
+end
+
+
+function love.update(dt)
+	--hyperCircle:update(dt)
+	if input:pressed('damage') then
+		chronotimer:tween(0.5, hp_bar_f, {w = hp_bar_f.w - 20}, 'in-out-cubic', function()
+			chronotimer:after(0.25, function() 
+				chronotimer:tween(0.5, hp_bar_b, {w = hp_bar_b.w - 20}, 'in-out-cubic', function() end, 'bg_tween')
+			end, 'bg_after')
+		end, 'fg')
+	end
+
+	chronotimer:update(dt)
+end
+
+
+function love.draw()
+	love.graphics.setColor(1, 0, 0)
+	love.graphics.rectangle('fill', set_x_bg, hp_bar_b.y - hp_bar_b.h/2, hp_bar_b.w, hp_bar_b.h)  --can't use hp_bar_f.x - hp_bar_f.w/2 bc it changes during tween
+	love.graphics.setColor(0.9, 0.3, 0.1)
+	love.graphics.rectangle('fill', set_x_fg, hp_bar_f.y - hp_bar_f.h/2, hp_bar_f.w, hp_bar_f.h)
+	
+	love.graphics.setColor(1, 1, 1)
+end
+```
+
+**Author's Answer:** For this one we need to define two structures, one for which will be the front layer and one that will the background layer of the HP bar. We'll define them simply like tables:
+
+ 
+```lua
+function love.load()
+
+    ...
+
+    hp_bar_bg = {x = gw/2, y = gh/2, w = 200, h = 40}
+
+    hp_bar_fg = {x = gw/2, y = gh/2, w = 200, h = 40}
+
+end
+```
+Here we simply define the x, y position and w, h size of the rectangle for both the front and back layer. To draw them we can simply use love.graphics.rectangle:
+
+ 
+```lua
+function love.draw()
+
+    ...
+
+    love.graphics.setColor(222, 64, 64)
+
+    love.graphics.rectangle('fill', hp_bar_bg.x, hp_bar_bg.y - hp_bar_bg.h/2, hp_bar_bg.w, hp_bar_bg.h)
+
+    love.graphics.setColor(222, 96, 96)
+
+    love.graphics.rectangle('fill', hp_bar_fg.x, hp_bar_fg.y - hp_bar_fg.h/2, hp_bar_fg.w, hp_bar_fg.h)
+
+    love.graphics.setColor(255, 255, 255)
+
+end
+```
+After drawing it, all we need to do is bind the d key to make the front layer move, and then after a small delay make the background layer move as well. We can use the tween function from a timer to achieve this:
+
+ 
+```lua
+function love.keypressed(key)
+
+    if key == 'd' then
+
+        timer:tween('fg', 0.5, hp_bar_fg, {w = hp_bar_fg.w - 25}, 'in-out-cubic')
+
+        timer:after('bg_after', 0.25, function()
+
+            timer:tween('bg_tween', 0.5, hp_bar_bg, {w = hp_bar_bg.w - 25}, 'in-out-cubic')
+
+        end)
+
+    end
+
+end
+```
+And so at first we decrease the width of the front bar by 25, and then after 0.25 seconds we do the same for the background bar. One important thing to notice is that all calls that use the timer have a name. This is because whenever we press the key and another previous tween is happening (like if you press the key multiple times really fast), then we want to cancel the previous tween so that two tweens aren't operating on the same variable at once.
+
+### 24. Taking the previous example of the expanding and shrinking circle, it expands once and then shrinks once. How would you change that code so that it expands and shrinks continually forever?
+
+```lua
+function love.load()
+	local object_files = {}
+	recursiveEnumerate('objects', object_files)
+	requireFiles(object_files)
+
+	circle = {x = 400, y = 300, radius = 50}
+
+    input = Input()
+
+	chronotimer = Timer()
+
+	chronotimer:every(2, function() 
+		chronotimer:tween(1, circle, {radius = 100}, 'in-out-cubic', function()
+			chronotimer:tween(1, circle, {radius = 50}, 'in-out-cubic')
+		end)
+	end)
+	
+end
+
+function love.update(dt)
+	chronotimer:update(dt)
+end
+
+function love.draw()
+	love.graphics.circle('fill', circle.x, circle.y, circle.radius)
+end
+```
+
+**Author's Answer:** The easiest way to do this is to change the timer:after call to be timer:every instead:
+
+```lua
+function love.load()
+
+    ...
+
+    timer:every(12, function()
+
+        timer:tween(6, circle, {radius = 96}, 'in-out-cubic', function()
+
+            timer:tween(6, circle, {radius = 24}, 'in-out-cubic')
+
+        end)
+
+    end)
+
+end
+```
+The duration of the every call should be the sum of the duration of both the expand and shrink tween inside it, so in this case it goes on for 12 seconds, since each tween goes for 6 seconds.
+
+
+### 25. Accomplish the results of the previous exercise using only the after function.
+
+```lua
+function circleAnimation()
+
+	chronotimer:tween(1, circle, {radius = 100}, 'in-out-cubic', function()
+		chronotimer:tween(1, circle, {radius = 50}, 'in-out-cubic')
+	end)
+	chronotimer:after(2, circleAnimation)
+
+end
+
+function love.load()
+	...
+
+	chronotimer:after(0, function()
+		chronotimer:tween(1, circle, {radius = 100}, 'in-out-cubic', function()
+			chronotimer:tween(1, circle, {radius = 50}, 'in-out-cubic')
+		end)
+		chronotimer:after(2, circleAnimation)
+	end)
+end
+
+
+```
+
+**Author's Answer:** The only difference with this exercise is that instead of using every we have to use multiple after calls to simulate every, which is something that the timer library supports:
+ 
+```lua
+function love.load()
+
+    ...
+
+    timer:after(0, function(f)
+
+        timer:tween(6, circle, {radius = 96}, 'in-out-cubic', function()
+
+            timer:tween(6, circle, {radius = 24}, 'in-out-cubic')
+
+        end)
+
+        timer:after(12, f)
+
+    end)
+
+end 
+```
+
+### 26. Bind the e key to expand the circle when pressed and the s to shrink the circle when pressed. Each new key press should cancel any expansion/shrinking that is still happening.
+
+```lua
+function love.load()
+	...
+    input = Input()
+
+	input:bind("e", 'expand')
+	input:bind("s", 'shrink')
+
+	chronotimer = Timer()
+	
+end
+
+
+function love.update(dt)
+
+    if input:pressed('expand') then
+
+		chronotimer:cancel('shrink_tween')
+		chronotimer:tween(3, circle, {radius = 100}, 'in-out-cubic', nil, 'expand_tween')
+	
+    elseif input:pressed('shrink') then
+
+		chronotimer:cancel('expand_tween')
+		chronotimer:tween(3, circle, {radius = 50}, 'in-out-cubic', nil, 'shrink_tween')
+	
+    end
+
+	chronotimer:update(dt)
+
+end
+```
+
+**Author's Answer:** This question asks for the application of the naming system in a tween, like in question 23. So the easiest way to do that is to break down each part of the behavior (expand, shrink) and tie it to the different keys:
+ 
+```lua
+function love.keypressed(key)
+
+    if key == 'e' then
+
+        timer:tween('expand', 6, circle, {radius = 96}, 'in-out-cubic')
+
+    elseif key == 's' then
+
+        timer:tween('shrink', 6, circle, {radius = 24}, 'in-out-cubic')
+
+    end
+
+end
+```
+With this, whenever the user presses either e or s, the circle will expand or shrink appropriately. However, if the other key is pressed while the tween from the previous press is happening, then two tweens will be operating on the same variable at the same time and bugs will happen. For instance, if you press e and then 2 seconds later you press s, for 4 seconds both tweens will be active.
+
+To fix this we need to actively cancel other tweens that might be active. In the case of expand, cancel shrink, and in the case of shrink, cancel expand:
+
+```lua
+function love.keypressed(key)
+
+    if key == 'e' then
+
+        timer:cancel('shrink')
+
+        timer:tween('expand', 6, circle, {radius = 96}, 'in-out-cubic')
+
+    elseif key == 's' then
+
+        timer:cancel('expand')
+
+        timer:tween('shrink', 6, circle, {radius = 24}, 'in-out-cubic')
+
+    end
+
+end
+```
+We don't need to also call the cancel function for the same tag (i.e. calling timer:cancel('expand') when e is pressed) because when the tween call has a tag attached to it it automatically does that once the tag is repeated in another call.
+
+
+### 27. Suppose we have the following code:
+```lua
+function love.load()
+    timer = Timer()
+    a = 10  
+end
+
+function love.update(dt)
+    timer:update(dt)
+end
+```
+### Using only the ```tween``` function and without placing the ```a``` variable inside another table, how would you tween its value to 20 over 1 second using the ```linear``` tween mode?
+
+```lua
+function love.load()
+    chronotimer = Timer()
+	a = 10
+	chronotimer:tween(1, _G, {a = 20}, 'linear')
+end
+```
+
+**Author's Answer:** The problem this question is asking about is how to change a variable that is not inside a table with the tween function. The second argument of the tween method receives a table, and then in the next argument after that the attribute that is to be changed can be specified. But how do we do this if a variable is not in a table, like a free floating global variable? The answer is to remember that all global variables in Lua are inside the _G table:
+
+```lua
+timer:tween(1, _G, {a = 20}, 'linear')
+```
+In this way, the a variable will have its value changed in the way the question asked. It's worth noting that I don't think there's a way of doing this if the variable was defined locally, since in that case the variable wouldn't be in the global environment table.
+
+For the answers for the table exercises, it's assumed that the moses library was initiated to the fn global variable.
+

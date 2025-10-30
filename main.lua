@@ -14,6 +14,7 @@ function recursiveEnumerate(folder, file_list)
         end
     end
 end
+
 -- -- Use this fuction when the class definitions do not return a table
 -- -- meaning they use ex. Circle = Object:extend() instead of local Circle = Object:extend()
 -- function requireFiles(files)
@@ -30,12 +31,17 @@ function requireFiles(files)
         if file:sub(-4) == '.lua' then
             local file_path = file:sub(1, -5) -- remove .lua extension from filename
             local last_foward_slash_index = file_path:find("/[^/]*$")
-            local class_name = file_path:sub(last_foward_slash_index + 1, #file_path)
-			--the # operator in Lua is used to get the length of a string or a table
-			-- or local class_name = file_path:sub(index+1)
+            local class_name = file_path:sub(last_foward_slash_index + 1, #file_path) -- or local class_name = file_path:sub(index+1)
 			_G[class_name] = require(file_path)
         end
     end
+end
+
+function circleAnimation()
+	chronotimer:tween(6, circle, {radius = 100}, 'in-out-cubic', function()
+		chronotimer:tween(6, circle, {radius = 50}, 'in-out-cubic')
+	end)
+	chronotimer:after(12, circleAnimation)
 end
 
 function love.load()
@@ -44,28 +50,66 @@ function love.load()
 	requireFiles(object_files)
 
 	--hyperCircle = HyperCircle(400, 300, 50, 10, 120)
-	rect_1 = {x = 400, y = 300, w = 50, h = 200}
-    rect_2 = {x = 400, y = 300, w = 200, h = 50}
+	-- hp_bar_f = {x = 400, y = 300, w = 200, h = 50}
+    -- hp_bar_b = {x = 400, y = 300, w = 200, h = 50}
+
+	-- set_x_fg = hp_bar_f.x - hp_bar_f.w/2
+	-- set_x_bg = hp_bar_b.x - hp_bar_b.w/2
 	
+	circle = {x = 400, y = 300, radius = 50}
+
     input = Input()
-    input:bind('mouse1', function() print(love.math.random()) end)
+    -- input:bind('d', 'damage')
+	input:bind("e", 'expand')
+	input:bind("s", 'shrink')
 
 	chronotimer = Timer()
-	for i = 1, 10 do
-		chronotimer:after(0.5*i, function() print(love.math.random()) end)
-	end
+	a = 10
+	chronotimer:tween(1, _G, {a = 20}, 'linear')
+	-- for i = 1, 10 do
+	-- 	chronotimer:after(0.5*i, function() print(love.math.random()) end)
+	-- end
 
+	-- chronotimer:after(0, function()
+	-- 	chronotimer:tween(6, circle, {radius = 100}, 'in-out-cubic', function()
+	-- 		chronotimer:tween(6, circle, {radius = 50}, 'in-out-cubic')
+	-- 	end)
+	-- 	chronotimer:after(12, circleAnimation)
+	-- end)
 end
-
+	
 function love.update(dt)
 	--hyperCircle:update(dt)
+	-- if input:pressed('damage') then	
+	-- 	chronotimer:tween(0.5, hp_bar_f, {w = hp_bar_f.w - 20}, 'in-out-cubic', function()
+	-- 		chronotimer:after(0.25, function() 
+	-- 			chronotimer:tween(0.5, hp_bar_b, {w = hp_bar_b.w - 20}, 'in-out-cubic', nil, 'bg_tween')
+	-- 		end, 'bg_after')
+	-- 	end, 'fg')		
+	-- end
+
+	if input:pressed('expand') then
+		chronotimer:cancel('shrink_tween')
+		chronotimer:tween(3, circle, {radius = 100}, 'in-out-cubic', nil, 'expand_tween')
+	elseif input:pressed('shrink') then
+		chronotimer:cancel('expand_tween')
+		chronotimer:tween(3, circle, {radius = 50}, 'in-out-cubic', nil, 'shrink_tween')
+	end
+
 	chronotimer:update(dt)
 end
 
 function love.draw()
 	--hyperCircle:draw()
-	love.graphics.rectangle('fill', rect_1.x - rect_1.w/2, rect_1.y - rect_1.h/2, rect_1.w, rect_1.h)
-    love.graphics.rectangle('fill', rect_2.x - rect_2.w/2, rect_2.y - rect_2.h/2, rect_2.w, rect_2.h)
+	
+	-- love.graphics.setColor(1, 0, 0)
+	-- love.graphics.rectangle('fill', set_x_bg, hp_bar_b.y - hp_bar_b.h/2, hp_bar_b.w, hp_bar_b.h)  --can't use hp_bar_f.x - hp_bar_f.w/2 bc it changes during tween
+	-- love.graphics.setColor(0.9, 0.3, 0.1)
+	-- love.graphics.rectangle('fill', set_x_fg, hp_bar_f.y - hp_bar_f.h/2, hp_bar_f.w, hp_bar_f.h)
+	-- love.graphics.setColor(1, 1, 1)
+
+	love.graphics.circle('fill', circle.x, circle.y, circle.radius)
+
 end
 
 function love.run()
