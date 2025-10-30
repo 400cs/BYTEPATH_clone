@@ -1,6 +1,7 @@
 Object = require 'libraries/classic/classic' --global var for class library
 Input = require 'libraries/boipushy/Input' --global var for input library
 Timer = require 'libraries/chrono/Timer' --global var for timer library
+Moses = require 'libraries/Moses/moses' --global var for moses library
 
 
 function recursiveEnumerate(folder, file_list)
