@@ -841,3 +841,41 @@ In this way, the a variable will have its value changed in the way the question 
 
 For the answers for the table exercises, it's assumed that the moses library was initiated to the fn global variable.
 
+### 28. Print the contents of the ```a``` table to the console using the each function.
+
+
+### 29. Count the number of 1 values inside the ```b``` table.
+
+### 30. Add 1 to all the values of the d table using the map function.
+
+### 31. Using the map function, apply the following transformations to the ```a``` table: if the value is a number, it should be doubled; if the value is a string, it should have 'xD' concatenated to it; if the value is a boolean, it should have its value flipped; and finally, if the value is a table it should be omitted.
+
+### 32. Sum all the values of the d list. The result should be 23.
+
+### 33. Suppose you have the following code:
+```lua
+if _______ then
+    print('table contains the value 9')
+end
+```
+### Which function from the library should be used in the underscored spot to verify if the b table contains or doesn't contain the value 9?
+
+### 34. Find the first index in which the value 7 is found in the c table.
+
+### 35. Filter the d table so that only numbers lower than 5 remain.
+
+### 36. Filter the c table so that only strings remain.
+
+### 37. Check if all values of the c and d tables are numbers or not. It should return false for the first and true for the second.
+
+### 38. Shuffle the d table randomly.
+
+### 39. Reverse the d table.
+
+### 40. Remove all occurrences of the values 1 and 4 from the d table.
+
+### 41. Create a combination of the b, c and d tables that doesn't have any duplicates.
+
+### 42. Find the common values between b and d tables.
+
+### 43. Append the b table to the d table.

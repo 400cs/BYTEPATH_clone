@@ -1,7 +1,7 @@
 Object = require 'libraries/classic/classic' --global var for class library
 Input = require 'libraries/boipushy/Input' --global var for input library
 Timer = require 'libraries/chrono/Timer' --global var for timer library
-Moses = require 'libraries/Moses/moses' --global var for moses library
+M = require 'libraries/Moses/moses' --global var for moses library
 
 
 function recursiveEnumerate(folder, file_list)
@@ -65,8 +65,8 @@ function love.load()
 	input:bind("s", 'shrink')
 
 	chronotimer = Timer()
-	a = 10
-	chronotimer:tween(1, _G, {a = 20}, 'linear')
+	-- a = 10
+	-- chronotimer:tween(1, _G, {a = 20}, 'linear')
 	-- for i = 1, 10 do
 	-- 	chronotimer:after(0.5*i, function() print(love.math.random()) end)
 	-- end
@@ -77,6 +77,33 @@ function love.load()
 	-- 	end)
 	-- 	chronotimer:after(12, circleAnimation)
 	-- end)
+	a = {1, 2, '3', 4, '5', 6, 7, true, 9, 10, 11, a = 1, b = 2, c = 3, {1, 2, 3}}
+	b = {1, 1, 3, 4, 5, 6, 7, false}
+	c = {'1', '2', '3', 4, 5, 6}
+	d = {1, 4, 3, 4, 5, 6}
+
+	--28)
+	--M.each(a, print)
+	--29)
+	M.count(b, 1)
+	--30)
+	M.map(d, function(_, v)
+		return v + 1
+	end)
+	--31)
+	M.map(a, function(_, v)
+		if type(v)=="number" then
+			return v * 2
+		elseif type(v)=="string" then
+			return v .. "xD"
+		elseif type(v)=="boolean" then
+			return not v
+		elseif type(v)=="table" then
+		end
+	end)
+	--32)
+	M.reduce(d, function(a, b) return a+b end)
+	
 end
 	
 function love.update(dt)
