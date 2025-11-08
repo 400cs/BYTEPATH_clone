@@ -842,15 +842,40 @@ In this way, the a variable will have its value changed in the way the question 
 For the answers for the table exercises, it's assumed that the moses library was initiated to the fn global variable.
 
 ### 28. Print the contents of the ```a``` table to the console using the each function.
-
+```lua
+M.each(a, print)
+```
 
 ### 29. Count the number of 1 values inside the ```b``` table.
+```lua
+M.count(b, 1)
+```
 
 ### 30. Add 1 to all the values of the d table using the map function.
+```lua
+M.map(d, function(_, v)
+		return v + 1
+	end)
+```
 
 ### 31. Using the map function, apply the following transformations to the ```a``` table: if the value is a number, it should be doubled; if the value is a string, it should have 'xD' concatenated to it; if the value is a boolean, it should have its value flipped; and finally, if the value is a table it should be omitted.
+```lua
+M.map(a, function(_, v)
+		if type(v)=="number" then
+			return v * 2
+		elseif type(v)=="string" then
+			return v .. "xD"
+		elseif type(v)=="boolean" then
+			return not v
+		elseif type(v)=="table" then
+		end
+	end)
+```
 
 ### 32. Sum all the values of the d list. The result should be 23.
+```lua
+M.reduce(d, function(a, b) return a+b end)
+```
 
 ### 33. Suppose you have the following code:
 ```lua
@@ -858,24 +883,88 @@ if _______ then
     print('table contains the value 9')
 end
 ```
+
+```lua
+if M.include(b, 9) then
+    	print('table contains the value 9')
+	end
+```
+
 ### Which function from the library should be used in the underscored spot to verify if the b table contains or doesn't contain the value 9?
+```lua
+M.each(a, print)
+```
 
 ### 34. Find the first index in which the value 7 is found in the c table.
+```lua
+M.detect(c, 7)
+```
 
 ### 35. Filter the d table so that only numbers lower than 5 remain.
+```lua
+M.select(d, function(_, v) return v < 5 end)
+```
+
+**Author's Answer:** This is an application of the ```select``` or ```filter``` function as it is shown in the examples:
+
+ 
+```lua
+fn.filter(d, function(_, v) return v < 5 end)
+```
+This is the same as:
+
+ 
+```lua
+fn.filter(d, function(_, v)
+
+    if v < 5 then
+
+        return true
+
+    end
+
+end)
+```
+So what this function should do is return true for values that should stay and false or nil otherwise. The reject function works the same, except with the opposite values being returned: values that should be removed should return true instead.
 
 ### 36. Filter the c table so that only strings remain.
+```lua
+M.select(c, function(_, v) return type(v) == 'string' end)
+```
 
 ### 37. Check if all values of the c and d tables are numbers or not. It should return false for the first and true for the second.
+```lua
+M.all(c, function(_, v) return type(v) == 'string' end)
+M.all(d, function(_, v) return type(v) == 'string' end)
+```
+
 
 ### 38. Shuffle the d table randomly.
+```lua
+local shuffled_d = M.shuffle(d)
+```
 
 ### 39. Reverse the d table.
+```lua
+M.reverse(d)
+```
 
 ### 40. Remove all occurrences of the values 1 and 4 from the d table.
+```lua
+M.remove(d, 4, 1)
+```
 
 ### 41. Create a combination of the b, c and d tables that doesn't have any duplicates.
+```lua
+M.union(b, c, d)
+```
 
 ### 42. Find the common values between b and d tables.
+```lua
+M.intersection(b, d)
+```
 
 ### 43. Append the b table to the d table.
+```lua
+M.append(b, d)
+```
