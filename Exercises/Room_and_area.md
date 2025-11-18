@@ -104,12 +104,45 @@ methods: [here](https://docs.unity3d.com/ScriptReference/SceneManagement.SceneMa
 GODOT: scenes
 methods: [here](https://docs.godotengine.org/en/stable/classes/class_scenetree.html#)
 
+```
+In Unity Rooms are called Scenes. The functions around a Scene are here and they mostly appear to have the same functionality as explained previously. Although they have additional things such as merging scenes and asynchronous loading of scenes, things which we could do in Lua if necessary.
+
+In Godot Rooms are also called Scenes. The functions around a Scene are here and they seem to be the same as well without anything that stands out. There are functions to change from scene to scene, as well as functions to reload scenes and then to communicate with the editor.
+
+In HaxeFlixel Rooms are called States. The functions around a FlxState seem to be what would be expected, except with a few differences that are worth noting. For instance, it has persistentDraw and persistentUpdate functions, which will run even when the state is not an active one. This can be useful in a number of situations like the page explains.
+
+The functions that switch/reload states are here in this sort of global object that has a bunch of assorted functionality in it. While a bit less organized than the previous engines, this generally works fine (and it's what we're doing as well, after all our state changing functions are global functions in a random file).
+
+In Construct 2 Rooms are called Layouts. Construct 2 seems to be mostly UI based so it's hard to get a handle on how things work exactly, but changing between layouts can be done by using events, apparently. It seems hard to get more concrete information based on the documentation alone, though.
+
+In Phaser Rooms are called States. And the functions that operate on states are on a StateManager. This is probably the most standard way of doing things I've seen. Note that each state here also has a reference to a Game object as well as a World object. The World object is the equivalent of an Area (although there's always only one world for Phaser, while in our case we can create multiple areas), and the Game object has no equivalent, but it would be everything that we defined and will define in the main.lua file.
+```
+
 ### 46. Pick two single player games and break them down in terms of rooms like I did for Nuclear Throne and Isaac. Try to think through things realistically and really see if something should be a room on its own or not. And try to specify when exactly do addRoom or gotoRoom calls would happen.
 Age of War:
 The way I would separate this in terms of rooms is: Mainmenu, DifficultySelect, Game
 
 Halls of Torrment:
-The way I would separate this in terms of rooms is: Lobby, MapSelect, Game, PowerSelect
+The way I would separate this in terms of rooms is: Lobby, MapSelect, Game, PowerSelect, Inventory
 
 ### 47. In a general way, how does the garbage collector in Lua work? (and if you don't know what a garbage collector is then read up on that) How can memory leaks happen in Lua? What are some ways to prevent those from happening or detecting that they are happening?
 When there are no references to a varible, it will get garbage collected later.
+
+```
+Whenever there are no more references pointing to a variable then eventually that variable will be collected. So if we want an object to be collected in Lua, all we have to do is set the variable that is holding that object to nil. If the object is being held inside a table then all we have to do is remove it from the table. If the object is both inside a table and being pointed to with a variable, then we must do both. If we just remove it from the table or just set the variable to nil then the object won't be collected.
+
+Memory leaks can happen when the developer forgets to remove references to an object, like in the previous example of only removing it from the table that holds it or only setting the variable that points to it to nil. Preventing this from happening is mostly a matter of paying attention and constantly checking to see if there are any execution paths that consistently lead to abnormal memory usage. Further on in the tutorial I'll go over some code that can help with this.
+```
+
+# Area Exercises
+
+### 48. Create a Stage room that has an Area in it. Then create a Circle object that inherits from GameObject and add an instance of that object to the Stage room at a random position every 2 seconds. The Circle instance should kill itself after a random amount of time between 2 and 4 seconds.
+
+
+### 49. Create a Stage room that has no Area in it. Create a Circle object that does not inherit from GameObject and add an instance of that object to the Stage room at a random position every 2 seconds. The Circle instance should kill itself after a random amount of time between 2 and 4 seconds.
+
+
+### 50. The solution to exercise 1 introduced the random function. Augment that function so that it can take only one value instead of two and it should generate a random real number between 0 and the value on that case (when only one argument is received). Also augment the function so that min and max values can be reversed, meaning that the first value can be higher than the second.
+
+
+### 51. What is the purpose of the local opts = opts or {} in the addGameObject function?

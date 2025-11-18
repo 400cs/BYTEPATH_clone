@@ -1,8 +1,45 @@
 Object = require 'libraries/classic/classic' --global var for class library
 Input = require 'libraries/boipushy/Input' --global var for input library
 Timer = require 'libraries/chrono/Timer' --global var for timer library
-M = require 'libraries/Moses/moses' --global var for moses library
+fn = require 'libraries/moses/moses' --global var for table operation library
 
+require 'GameObject'
+require 'utils'
+
+
+function love.load()
+	local object_files = {}
+	recursiveEnumerate('objects', object_files)
+	requireFiles(object_files)
+
+	local room_files = {}
+	recursiveEnumerate('rooms', room_files)
+	requireFiles(room_files)
+	
+	timer = Timer()
+	input = Input()
+	
+	current_room = nil
+	gotoRoom('Stage')
+
+	-- input:bind('f1', function() gotoRoom('CircleRoom') end)
+    -- input:bind('f2', function() gotoRoom('RectangleRoom') end)
+    -- input:bind('f3', function() gotoRoom('PolygonRoom') end)
+end
+	
+function love.update(dt)
+	timer:update(dt)
+	if current_room then current_room:update(dt) end
+end
+
+function love.draw()
+	if current_room then current_room:draw() end
+end
+
+function gotoRoom(room_type, ...)
+	 print("Going to room: " .. room_type)
+    current_room = _G[room_type](...)
+end
 
 function recursiveEnumerate(folder, file_list)
 	local items = love.filesystem.getDirectoryItems(folder)
@@ -24,6 +61,7 @@ function requireFiles(files)
             local file_path = file:sub(1, -5) -- remove .lua extension from filename
             local last_foward_slash_index = file_path:find("/[^/]*$")
             local class_name = file_path:sub(last_foward_slash_index + 1, #file_path) -- or local class_name = file_path:sub(index+1)
+			print(class_name)
 			_G[class_name] = require(file_path)
         end
     end
@@ -37,38 +75,6 @@ end
 --         require(file)
 --     end
 -- end
-
-function love.load()
-	local object_files = {}
-	recursiveEnumerate('objects', object_files)
-	requireFiles(object_files)
-
-	local room_files = {}
-	recursiveEnumerate('rooms', room_files)
-	requireFiles(room_files)
-	
-	current_room = nil
-
-    input = Input()
-	input:bind('f1', function() gotoRoom('CircleRoom') end)
-    input:bind('f2', function() gotoRoom('RectangleRoom') end)
-    input:bind('f3', function() gotoRoom('PolygonRoom') end)
-
-	chronotimer = Timer()
-end
-	
-function love.update(dt)
-	chronotimer:update(dt)
-	if current_room then current_room:update(dt) end
-end
-
-function love.draw()
-	if current_room then current_room:draw() end
-end
-
-function gotoRoom(room_type, ...)
-    current_room = _G[room_type](...)
-end
 
 function love.run()
 	if love.load then love.load(love.arg.parseGameArguments(arg), arg) end
