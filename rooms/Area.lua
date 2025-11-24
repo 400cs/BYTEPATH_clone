@@ -5,7 +5,7 @@ function Area:new(room)
     self.game_objects = {}
 end
 
-function Area:update()
+function Area:update(dt)
     for i = #self.game_objects, 1, -1 do
         local game_object = self.game_objects[i]
         game_object:update(dt)

@@ -16,7 +16,7 @@ function GameObject:new(area, x, y, opts)
     self.creation_time = love.timer.getTime()
 end
 
-function GameObject:update()
+function GameObject:update(dt)
     if self.timer then self.timer:update(dt) end
 end
 
