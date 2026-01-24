@@ -137,7 +137,51 @@ Memory leaks can happen when the developer forgets to remove references to an ob
 # Area Exercises
 
 ### 48. Create a Stage room that has an Area in it. Then create a Circle object that inherits from GameObject and add an instance of that object to the Stage room at a random position every 2 seconds. The Circle instance should kill itself after a random amount of time between 2 and 4 seconds.
+Stage room
+```lua
+local Stage = Object:extend()
 
+function Stage:new()
+    self.area = Area()
+    self.timer = Timer()
+	-- add an instance of that object to the Stage room at a random position every 2 seconds
+    self.timer:every(2, function()
+		self.area:addGameObject('Circle', random(0,800), random(0, 600))
+	end)
+end
+
+function Stage:update(dt)
+    self.area:update(dt)
+    self.timer:update(dt)
+end
+
+function Stage:draw()
+    self.area:draw()
+end
+
+return Stage
+```
+
+Circle object
+```lua
+local Circle = GameObject:extend()
+
+function Circle:new(area, x, y, opts)
+    Circle.super.new(self, area, x, y, opts)
+	--kill itself after a random amount of time between 2 and 4 seconds
+    self.timer:after(random(2, 4), function() self.dead = true end)
+end
+
+function Circle:update(dt)
+    Circle.super.update(self, dt)
+end
+
+function Circle:draw()
+    love.graphics.circle('fill', self.x, self.y, 50)
+end
+
+return Circle
+```
 
 ### 49. Create a Stage room that has no Area in it. Create a Circle object that does not inherit from GameObject and add an instance of that object to the Stage room at a random position every 2 seconds. The Circle instance should kill itself after a random amount of time between 2 and 4 seconds.
 
