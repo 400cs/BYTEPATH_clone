@@ -1,4 +1,4 @@
-GameObject = Object:extend()
+local GameObject = Object:extend()
 
 function GameObject:new(area, x, y, opts)
     local opts = opts or {}
@@ -23,3 +23,5 @@ end
 function GameObject:draw()
 
 end
+
+return GameObject

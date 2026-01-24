@@ -3,7 +3,7 @@ Input = require 'libraries/boipushy/Input' --global var for input library
 Timer = require 'libraries/chrono/Timer' --global var for timer library
 fn = require 'libraries/moses/moses' --global var for table operation library
 
-require 'GameObject'
+GameObject = require 'GameObject'
 require 'utils'
 
 
