@@ -257,5 +257,31 @@ return Circle
 
 ### 50. The solution to exercise 1 introduced the random function. Augment that function so that it can take only one value instead of two and it should generate a random real number between 0 and the value on that case (when only one argument is received). Also augment the function so that min and max values can be reversed, meaning that the first value can be higher than the second.
 
+```lua
+--original
+function random(min, max)
+    return love.math.random()*(max - min) + min
+end
+
+
+function random(min, max)
+    if not max then
+        return love.math.random()*min
+    else
+        if min > max then 
+            min, max  = max, min
+        end
+        return love.math.random()*(max - min) + min
+    end
+end
+```
+
 
 ### 51. What is the purpose of the local opts = opts or {} in the addGameObject function?
+If the opts table (the optional agruments) is passed then it gets assigned to the ```local opts``` var, else if no optional arguments were passed then ```opts``` is just an empty table. ```opts``` will be used to be passed here:
+```lua
+local game_object = _G[game_object_type](self, x or 0, y or 0, opts)
+```
+where the gameobject will be created/instaniated with additional agruments.
+
+`local opts = opts or {}` serves to define the `opts` variable locally even if it wasn't defined by the caller. For instance, the if caller does something like `addGameObject('ClassName', x, y)`, the opts table will be `nil`, which is a problem because various things inside the `GameObject class` definition assume that `opts` exists as a table. To prevent complications from this we simply say that `opts` will be the `opts` variable that was passed in, or if none was passed in, then it will be an empty table. This works because of how the `or` operator works in Lua (which is something we went over in previous exercises and will go over in the future too, so make sure you understand why this is the case).
