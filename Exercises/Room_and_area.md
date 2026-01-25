@@ -184,7 +184,76 @@ return Circle
 ```
 
 ### 49. Create a Stage room that has no Area in it. Create a Circle object that does not inherit from GameObject and add an instance of that object to the Stage room at a random position every 2 seconds. The Circle instance should kill itself after a random amount of time between 2 and 4 seconds.
+Similar to #48 but we don't use Area and GameObject class, instead Stage class handles the object creation and removal; and Circle needs to have a dead attribute and a timer instance instead of using GameObject for that. 
 
+tldr: This exercise is essentially asking us to do the Area/GameObject binding manually from scratch.
+Stage room
+```lua
+local Stage = Object:extend()
+
+function Stage:new()
+    --self.area = Area()
+    self.game_objects = {}
+    self.timer = Timer()
+
+    self.timer:every(2, function()
+		--self.area:addGameObject('Circle', random(0,800), random(0, 600))
+        table.insert(self.game_objects, Circle(random(0,800), random(0, 600)))
+	end)
+end
+
+function Stage:update(dt)
+    --self.area:update(dt)
+    for i = #self.game_objects, 1, -1 do
+        local game_object = self.game_objects[i]
+        game_object:update(dt)
+        if game_object.dead then
+            table.remove(self.game_objects, i)
+        end
+    end
+
+    self.timer:update(dt)
+end
+
+function Stage:draw()
+    --self.area:draw()
+    for  _, game_object in ipairs(self.game_objects) do
+        game_object:draw()
+    end
+end
+
+return Stage
+```
+
+Circle object
+```lua
+--local Circle = GameObject:extend()
+local Circle = Object:extend()
+
+--function Circle:new(area, x, y, opts)
+function Circle:new(x, y)
+    --Circle.super.new(self, area, x, y, opts)
+    self.x = x
+    self.y = y
+    self.dead = false
+    
+    self.timer = Timer()
+    
+
+    self.timer:after(random(2, 4), function() self.dead = true end)
+end
+
+function Circle:update(dt)
+    --Circle.super.update(self, dt)
+    if self.timer then self.timer:update(dt) end
+end
+
+function Circle:draw()
+    love.graphics.circle('fill', self.x, self.y, 50)
+end
+
+return Circle
+```
 
 ### 50. The solution to exercise 1 introduced the random function. Augment that function so that it can take only one value instead of two and it should generate a random real number between 0 and the value on that case (when only one argument is received). Also augment the function so that min and max values can be reversed, meaning that the first value can be higher than the second.
 

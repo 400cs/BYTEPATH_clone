@@ -1,7 +1,7 @@
 Object = require 'libraries/classic/classic' --global var for class library
 Input = require 'libraries/boipushy/Input' --global var for input library
 Timer = require 'libraries/chrono/Timer' --global var for timer library
-fn = require 'libraries/moses/moses' --global var for table operation library
+fn = require 'libraries/Moses/moses' --global var for table operation library
 
 GameObject = require 'GameObject'
 require 'utils'
