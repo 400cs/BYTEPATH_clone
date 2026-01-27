@@ -18,7 +18,7 @@ end)
 ```
 It receives a function that receives a game object and performs some test on it. If the result of the test is true then the game object will be added to the table that is returned once `getGameObjects` is fully run.
 
-***my solution:***
+**my solution:**
 ```lua
 function Area:getGameObjects(func)
     local filtered_game_objects = {}
@@ -31,7 +31,7 @@ function Area:getGameObjects(func)
 end
 ```
 
-***answer key's solution***
+**answer key's solution:**
 
 We're tasked with creating a function named `getGameObjects` that receives a function that performs a test on an entity. If the entity passes the test then true is returned and that entity is added to a list that will be returned by `getGameObjects`. This exercise is basically asking if you have a good understanding of what passing functions around to other functions as arguments can achieve.
 ```lua
@@ -57,7 +57,8 @@ e = nil or 4
 f = (4 > 3) and 1 or 2
 g = (3 > 4) and 1 or 2
 ```
-***my solution***
+**my solution:**
+
 a = 2;
 b = nil;
 c = 3;
@@ -78,7 +79,7 @@ The logical operators are `and`, `or`, and `not`. Like control structures, all l
 Both and and or use short-cut evaluation, that is, they evaluate their second operand only when necessary.
 
 
-***answer key's solution***
+**answer key's solution:**
 
 This exercise is asking if you understand how the `and` and `or` operators work and how they can be used to check for certain conditions.
 
@@ -106,14 +107,46 @@ For the variable `f` the result is 1. First, `(4 > 3)` is true, so the whole thi
 
 For the variable `g` the result is 2. First, `(3 > 4)` is false, so the whole thing parses out to `false and 1 or 2`. Then we parse `false and 1` which is false, and finally we're left with `false or 2`, which is 2.
 
-### 54. Create a function named `printAll` that receives an unknown number of arguments and prints them all to the console. `printAll(1, 2, 3)` will print 1, 2 and 3 to the console and `printAll(1, 2, 3, 4, 5, 6, 7, 8, 9)` will print from 1 to 9 to the console, for instance. The number of arguments passed in is unknown and may vary.
 
+### 54. Create a function named `printAll` that receives an unknown number of arguments and prints them all to the console. `printAll(1, 2, 3)` will print 1, 2 and 3 to the console and `printAll(1, 2, 3, 4, 5, 6, 7, 8, 9)` will print from 1 to 9 to the console, for instance. The number of arguments passed in is unknown and may vary.
+**my solution**
+```lua
+function printAll(...)
+    local args = {...}
+    for _, arg in ipairs(args) do 
+        print(arg)
+    end
+end
+```
+This question is asking for your understanding of the `...` construct in Lua. Whenever you define the arguments of a function as `...`, it means that the function can receive an unknown amount of arguments and that you'll deal with separating them inside. So, our function could look like this:
+```lua
+function printAll(...)
+    local args = {...}
+    for _, arg in ipairs(args) do
+        print(arg)
+    end
+end
+```
+So we just capture all the arguments passed in inside the table args and then we simply go over that table and print each value.
 
 ### 55. Similarly to the previous exercise, create a function named `printText` that receives an unknown number of strings, concatenates them all into a single string and then prints that single string to the console.
-
+```lua
+function printText(...)
+    local args = {...}
+    local str = ""
+    for _, arg in ipairs(args) do
+        str = str .. arg
+    end
+    print(str)
+end
+```
 
 ### 56. How can you trigger a garbage collection cycle?
+By dereferencing all instances of that variable, setting all references to nil. For example, `a = game_object("gun")` and an area called `EquipStage` has a self.game_objects = {a = game_object("gun"), ...}, both instances of this `a` need to be set to `nil` for this object to be garbage collected.
 
+**answer key's solution:**
+
+The `collectgarbage` function can be used to do a number of things related to the garbage collector. As the link states, calling it like `collectgarbage("collect")` will perform a full garbage collection cycle.
 
 ### 57. How can you show how much memory is currently being used up by your Lua program?
 
