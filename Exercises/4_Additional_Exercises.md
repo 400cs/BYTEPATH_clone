@@ -18,6 +18,33 @@ end)
 ```
 It receives a function that receives a game object and performs some test on it. If the result of the test is true then the game object will be added to the table that is returned once `getGameObjects` is fully run.
 
+***my solution:***
+```lua
+function Area:getGameObjects(func)
+    local filtered_game_objects = {}
+    for _, game_object in ipairs(self.game_objects) do
+        if func(game_object) then
+            table.insert(filtered_game_objects, game_object)
+        end
+    end
+    return filtered_game_objects
+end
+```
+
+***answer key's solution***
+
+We're tasked with creating a function named `getGameObjects` that receives a function that performs a test on an entity. If the entity passes the test then true is returned and that entity is added to a list that will be returned by `getGameObjects`. This exercise is basically asking if you have a good understanding of what passing functions around to other functions as arguments can achieve.
+```lua
+function Area:getGameObjects(filter)
+    local out = {}
+    for _, game_object in ipairs(self.game_objects) do
+        if filter(game_object) then
+            table.insert(out, game_object)
+        end
+    end
+    return out
+end
+```
 
 
 ### 53. What is the value in `a`, `b`, `c`, `d`, `e`, `f` and `g`?
