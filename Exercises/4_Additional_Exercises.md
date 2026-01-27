@@ -57,7 +57,54 @@ e = nil or 4
 f = (4 > 3) and 1 or 2
 g = (3 > 4) and 1 or 2
 ```
+***my solution***
+a = 2;
+b = nil;
+c = 3;
+d = 4;
+e = 4;
+f = 1;
+g = 2;
 
+*note from lua doc:*
+The logical operators are `and`, `or`, and `not`. Like control structures, all logical operators consider `false` and `nil` as false and anything else as true. The operator `and` returns its first argument if it is false; otherwise, it returns its second argument. The operator `or` returns its first argument if it is not false; otherwise, it returns its second argument:
+```lua
+    print(4 and 5)         --> 5
+    print(nil and 13)      --> nil
+    print(false and 13)    --> false
+    print(4 or 5)          --> 4
+    print(false or 5)      --> 5
+```
+Both and and or use short-cut evaluation, that is, they evaluate their second operand only when necessary.
+
+
+***answer key's solution***
+
+This exercise is asking if you understand how the `and` and `or` operators work and how they can be used to check for certain conditions.
+
+For the variable `a` the result is 2. Whenever two variables are true in an `and` operation, the second variable will always be the returned result. This is useful in a number of situations, like in the previous exercise the line `if e.hp and e.hp >= 50 then` is asking if `e.hp`exists, and then if it does, checking if that value is over 50. If `e.hp` doesn't exist, then that will be `nil` and the next check won't even be run (and if it was run it would result in an an error, since it would be asking if `nil >= 50` which can't be done). In this way we can check to see if a certain attribute exists and then use that attribute in some way all in the same line instead of doing something like this:
+
+ ```lua
+if e.hp then
+    if e.hp >= 50 then
+    
+    end
+end
+```
+For the variable `b` the result is `nil`. In Lua only `nil` and `false` are false values, so there's no way for this to be anything else. Like I just said, if the first element of an `and` operation is false, then the second one is not even checked, so in this case the value 2 is irrelevant.
+
+For the variable `c` the result is 3. Whenever two variables are true in an `or` operation, the first variable will always be the returned result. This is useful in a number of situations, like whenever we do stuff like `opts = opts or {}`. If the `opts` that's passed in is `nil`, then the `or` will return the empty table. But if the `opts` value is defined then it will just return `opts` itself. Using `or` like this we can check to see if some value that was passed in was actually passed in or not instead of doing something like this:
+
+```lua
+if not opts then
+    opts = {}
+end
+```
+For the variable `d` the result is 4. If one of the elements in an `or` operation is false then it will just return the one that's true. For the variable `e` the result is 4 as well and the same logic can be used to explain it.
+
+For the variable `f` the result is 1. First, `(4 > 3)` is true, so the whole thing parses out to `true and 1 or 2`. `and` takes precedence over `or`, so first we parse `true and 1` which returns 1. Now we have `1 or 2` left, which parses out to 1 again.
+
+For the variable `g` the result is 2. First, `(3 > 4)` is false, so the whole thing parses out to `false and 1 or 2`. Then we parse `false and 1` which is false, and finally we're left with `false or 2`, which is 2.
 
 ### 54. Create a function named `printAll` that receives an unknown number of arguments and prints them all to the console. `printAll(1, 2, 3)` will print 1, 2 and 3 to the console and `printAll(1, 2, 3, 4, 5, 6, 7, 8, 9)` will print from 1 to 9 to the console, for instance. The number of arguments passed in is unknown and may vary.
 
