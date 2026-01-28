@@ -148,10 +148,20 @@ By dereferencing all instances of that variable, setting all references to nil. 
 
 The `collectgarbage` function can be used to do a number of things related to the garbage collector. As the link states, calling it like `collectgarbage("collect")` will perform a full garbage collection cycle.
 
+
 ### 57. How can you show how much memory is currently being used up by your Lua program?
+`collectgarbage("count")`
+
+"count": Returns the total memory in use by Lua in Kbytes. The value has a fractional part, so that it multiplied by 1024 gives the exact number of bytes in use by Lua.
 
 
 ### 58. How can you trigger an error that halts the execution of the program and prints out a custom error message?
+error (message [, level])
+Raises an error with message as the error object. This function never returns.
+
+**answer key's solution:**
+
+We can use the error function to do this. I personally rarely use this function in game code, but if you're building a library and you want to lock off certain paths of execution it's useful to halt execution when those paths are activated and tell the user how they used your library inappropriately. It's a way better thing to do than just failing silently.
 
 
 ### 59. Create a class named `Rectangle` that draws a rectangle with some width and height at the position it was created. Create 10 instances of this class at random positions of the screen and with random widths and heights. When the d key is pressed a random instance should be deleted from the environment. When the number of instances left reaches 0, another 10 new instances should be created at random positions of the screen and with random widths and heights.
