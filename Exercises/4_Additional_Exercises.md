@@ -394,12 +394,104 @@ objects = area:queryCircleArea(100, 100, 50, {'Enemy', 'Projectile'})
 ```
 It receives an x, y position, a radius and a list of strings containing names of target classes. Then it returns all objects belonging to those classes inside the circle of radius radius centered in position x, y.
 
+**my solution:**
+
+```lua
+function Area:queryCircleArea(x, y, radius, object_types)
+    local game_object_within_area = {}
+
+    --go through all game_objects
+    for _,game_object in ipairs(self.game_objects) do
+        
+        -- get the filtered game_object
+        if fn.include(object_types, game_object.class) then
+            local d = distance(x, y, game_object.x, game_object.y)
+            
+            --check if filtered game_object is within the area
+            if d <= radius then
+                table.insert(game_object_within_area, game_object)
+            end
+        end
+    end
+    
+    return game_object_within_area
+end
+```
+in utils.lua
+```lua
+function distance(x1, y1, x2, y2)
+    return math.sqrt( (y1 - y2)^2 + (x1 - x2)^2 )
+end
+```
+**answer key's solution:**
+
+The first thing we need to do is to go over all game objects in an Area and check to see if they are of the target classes we want:
+
+ ```lua
+function Area:queryCircleArea(x, y, radius, object_types)
+    for _, game_object in ipairs(self.game_objects) do
+        if fn.any(object_types, game_object.class)
+      
+        end
+    end
+end
+```
+Here I make use of the .class attribute, which holds the name of the class this object belongs to. We didn't define this previously but it can be easily added to every object that is inside the Area in the `addGameObject` function:
+
+ ```lua
+function Area:addGameObject(game_object_type, ...)
+    ...
+    game_object.class = game_object_type
+    table.insert(self.game_objects, game_object)
+    return game_object
+end
+```
+This is mostly something convenient so we can use the `any` (aka `include`) function from ***moses*** We can achieve all this without this function and instead just looping over the `object_types` list and using ***classic's*** `is` function instead. Either way works but the first one feels cleaner.
+
+Now that we know if the game object is or isn't of the type we're looking for, we can do the actual check to see if it's inside our determined radius or not. To do this we'll use a small function called `distance`, which computes the distance between two points:
+
+ ```lua
+function distance(x1, y1, x2, y2)
+    return math.sqrt((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2))
+end
+And so with that we can do this:
+
+ 
+if fn.any(object_types, game_object.class)
+    local d = distance(x, y, game_object.x, game_object.y)
+    if d <= radius then
+    
+    end
+end
+```
+Here we simply check the distance between the center of the radius and the center of the object. If that distance is lower than the radius then we'll add that object to a list, which we will then return once the loop is over:
+
+ ```lua
+function Area:queryCircleArea(x, y, radius, object_types)
+    local out = {}
+    for _, game_object in ipairs(self.game_objects) do
+        if fn.any(object_types, game_object.class)
+            local d = distance(x, y, game_object.x, game_object.y)
+            if d <= radius then
+                table.insert(out, game_object)
+            end
+        end
+    end
+    return out
+end
+```
+
 
 ### 62. Create a getClosestGameObject function inside the Area class that works follows:
 ```lua
 -- Get the closest object of class 'Enemy' in a circle of 50 radius around point 100, 100
 closest_object = area:getClosestObject(100, 100, 50, {'Enemy'})
 It receives the same arguments as the queryCircleArea function but returns only one object (the closest one) instead.
+```
+**my solution:**
+
+```lua
+
 ```
 
 ### 63. How would you check if a method exists on an object before calling it? And how would you check if an attribute exists before using its value?

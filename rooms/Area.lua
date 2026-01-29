@@ -24,6 +24,7 @@ end
 function Area:addGameObject(game_object_type, x, y, opts)
     local opts = opts or {}
     local game_object = _G[game_object_type](self, x or 0, y or 0, opts)
+    game_object.class = game_object_type
     table.insert(self.game_objects, game_object)
     return game_object
 end
@@ -36,6 +37,26 @@ function Area:getGameObjects(func)
         end
     end
     return filtered_game_objects
+end
+
+function Area:queryCircleArea(x, y, radius, object_types)
+    local game_object_within_area = {}
+
+    --go through all game_objects
+    for _,game_object in ipairs(self.game_objects) do
+        
+        -- get the filtered game_object
+        if fn.include(object_types, game_object.class) then
+            local d = distance(x, y, game_object.x, game_object.y)
+            
+            --check if filtered game_object is within the area
+            if d <= radius then
+                table.insert(game_object_within_area, game_object)
+            end
+        end
+    end
+    
+    return game_object_within_area
 end
 
 return Area
