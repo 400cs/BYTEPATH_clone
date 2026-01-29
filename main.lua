@@ -21,7 +21,7 @@ function love.load()
 	input = Input()
 	
 	current_room = nil
-	gotoRoom('RectangleRoom')
+	gotoRoom('Stage')
 	--gotoRoom('Stage')
 
 	-- input:bind('f1', function() gotoRoom('CircleRoom') end)

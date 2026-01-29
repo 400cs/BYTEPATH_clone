@@ -1,34 +1,37 @@
 local Stage = Object:extend()
 
 function Stage:new()
-    --self.area = Area()
-    self.game_objects = {}
+    self.area = Area()
     self.timer = Timer()
 
-    self.timer:every(2, function()
-		--self.area:addGameObject('Circle', random(0,800), random(0, 600))
-        table.insert(self.game_objects, Circle(random(0,800), random(0, 600)))
-	end)
+    local function process()
+        --self.timer:cancel('create_process')
+        --self.timer:cancel('remove_process')
+
+        self.timer:every(0.25, function()
+		    self.area:addGameObject('Circle', random(0,800), random(0, 600))
+	    end, 10, 'create_process')
+    
+        self.timer:after(2.5,function()
+            self.timer:every(random(0.5, 1), function()
+                table.remove(self.area.game_objects, random(1, #self.area.game_objects))
+                if #self.area.game_objects == 0 then
+                process()
+                end
+            end, 10, 'remove_process')
+        end)
+    end
+    
+    process()
 end
 
 function Stage:update(dt)
-    --self.area:update(dt)
-    for i = #self.game_objects, 1, -1 do
-        local game_object = self.game_objects[i]
-        game_object:update(dt)
-        if game_object.dead then
-            table.remove(self.game_objects, i)
-        end
-    end
-
+    self.area:update(dt)
     self.timer:update(dt)
 end
 
 function Stage:draw()
-    --self.area:draw()
-    for  _, game_object in ipairs(self.game_objects) do
-        game_object:draw()
-    end
+    self.area:draw()
 end
 
 return Stage

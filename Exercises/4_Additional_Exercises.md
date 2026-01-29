@@ -165,7 +165,7 @@ We can use the error function to do this. I personally rarely use this function 
 
 
 ### 59. Create a class named `Rectangle` that draws a rectangle with some width and height at the position it was created. Create 10 instances of this class at random positions of the screen and with random widths and heights. When the d key is pressed a random instance should be deleted from the environment. When the number of instances left reaches 0, another 10 new instances should be created at random positions of the screen and with random widths and heights.
-
+**my solution:**
 ```lua
 local Rectangle = GameObject:extend()
 
@@ -219,9 +219,173 @@ return RectangleRoom
 ```
 
 ### 60. Create a class named `Circle` that draws a circle with some radius at the position it was created. Create 10 instances of this class at random positions of the screen with random radius, and also with an interval of 0.25 seconds between the creation of each instance. After all instances are created (so after 2.5 seconds) start deleting once random instance every [0.5, 1] second (a random number between 0.5 and 1). After all instances are deleted, repeat the entire process of recreation of the 10 instances and their eventual deletion. This process should repeat forever.
+**my solution:**
 ```lua
+local Circle = GameObject:extend()
 
+function Circle:new(area, x, y, opts)
+    Circle.super.new(self, area, x, y, opts)
+    --self.timer:after(random(2, 4), function() self.dead = true end)
+    self.radius = random(10, 50)
+end
+
+function Circle:update(dt)
+    Circle.super.update(self, dt)
+    --if self.timer then self.timer:update(dt) end
+end
+
+function Circle:draw()
+    love.graphics.circle('fill', self.x, self.y, self.radius)
+end
+
+return Circle
 ```
+
+```lua
+local Stage = Object:extend()
+
+function Stage:new()
+    self.area = Area()
+    self.timer = Timer()
+
+    local function process()
+        self.timer:cancel('create_process')
+        self.timer:cancel('remove_process')
+
+        self.timer:every(0.25, function()
+		    self.area:addGameObject('Circle', random(0,800), random(0, 600))
+	    end, 10, nil, 'create_process')
+    
+        self.timer:after(2.5,function()
+            self.timer:every(random(0.5, 1), function()
+                table.remove(self.area.game_objects, random(1, #self.area.game_objects))
+                if #self.area.game_objects == 0 then
+                process()
+                end
+            end, 10, nil, 'remove_process')
+        end)
+    end
+    
+    process()
+end
+
+function Stage:update(dt)
+    self.area:update(dt)
+    self.timer:update(dt)
+end
+
+function Stage:draw()
+    self.area:draw()
+end
+
+return Stage
+```
+**answer key's solution:**
+
+First we create the default `Circle` class:
+
+```lua
+Circle = GameObject:extend()
+​
+function Circle:new(area, x, y, opts)
+    Circle.super.new(self, area, x, y, opts)
+    self.r = random(10, 50)
+end
+​
+function Circle:update(dt)
+    Circle.super.update(self, dt)
+end
+​
+function Circle:draw()
+    love.graphics.circle('fill', self.x, self.y, self.r)
+end
+```
+Now we need to create 10 instances of this class, but with an interval of 0.25 between the creation of each instance:
+
+```lua
+function Stage:new()
+    ...
+    for i = 1, 10 do
+        timer:after(i*0.25, function()
+            self.area:addGameObject('Circle', random(0, 800), random(0, 600))
+        end)
+    end
+end
+```
+Using the `timer:after` call inside the for loop we can make it so that one instance will get spawned every 0.25 seconds by multiplying i by 0.25 and using that as the argument for the after call.
+
+Now it says that after all the instances are created we need to delete a random one every [0.5, 1] second:
+
+```lua
+function Stage:new()
+    ...
+        
+    timer:after(2.5, function()
+        timer:every(random(0.5, 1), function()
+            table.remove(self.area.game_objects, love.math.random(1, #self.area.game_objects))
+        end, 10)
+    end)
+end
+```
+So, after the initial 2.5 seconds of creating instances, we create an every timer that will run with an interval of between 0.5 and 1 second and will remove an instance each time it is run.
+
+Now the last thing the exercise asks for is to restart the process again once the number of instances left reaches 0. Similarly to the previous exercise we can just check the number of entities left in game_objects:
+
+```lua
+function Stage:new()
+    ...
+        
+    timer:after(2.5, function()
+        timer:every(random(0.5, 1), function()
+            table.remove(self.area.game_objects, love.math.random(1, #self.area.game_objects))
+            if #self.area.game_objects == 0 then
+                -- restart
+            end
+        end)
+    end)
+end
+```
+Now the question is what do we put in place of --restart? The exercise asks for this process to repeat forever, so the first instinct would be to put this all into a function, and then call this function from within itself whenever it should be repeated. That would look something like this:
+
+```lua
+function Stage:new()
+    local function process()
+        for i = 1, 10 do
+            timer:after(i*0.25, function()
+                self.area:addGameObject('Circle', random(0, 800), random(0, 600))
+            end)
+        end
+        
+        timer:after(2.5, function()
+            timer:every(random(0.5, 1), function()
+                table.remove(self.area.game_objects, love.math.random(1, #self.area.game_objects))
+                if #self.area.game_objects == 0 then
+                    process()
+                end
+            end)
+        end)
+    end
+    
+    process()
+end
+```
+The only problem with this approach is that the first time it is called it will create one every timer, the second time it is called it will create another, and so on. In the end we will have multiple every timers operating at the same time and that will lead to bugs. One easy way to fix it is to label the every timer so that whenever it's called again, the previous one is cancelled.
+
+```lua
+timer:every('process_every', random(0.5, 1), function()
+    ...
+end)
+```
+And another thing we need to do is to also cancel the previous every timer whenever the process restarts again, or instances will be removed until the next every is called, which is something we don't want:
+
+```lua
+local function process()
+    timer:cancel('process_every')
+    ...
+end
+```
+This exercise is very very tricky and there are many ways to get lost. But this is also the kind of thing that you have to do all the time in games. Understanding and controlling things so that they happen in appropriate orders and at appropriate times is very important, so make sure you understand everything that's happening!
+
 
 ### 61. Create a `queryCircleArea` function inside the Area class that works as follows:
 ```lua
