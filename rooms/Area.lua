@@ -40,7 +40,7 @@ function Area:getGameObjects(func)
 end
 
 function Area:queryCircleArea(x, y, radius, object_types)
-    local game_object_within_area = {}
+    local game_objects_within_area = {}
 
     --go through all game_objects
     for _,game_object in ipairs(self.game_objects) do
@@ -56,7 +56,19 @@ function Area:queryCircleArea(x, y, radius, object_types)
         end
     end
     
-    return game_object_within_area
+    return game_objects_within_area
+end
+
+function Area:getClosestGameObject(x, y, radius, object_types)
+    local game_objects_within_area = self:queryCircleArea(x, y, radius, object_types)
+
+    fn.sort(game_objects_within_area, function(a, b)
+        local a_d = distance(x, y, a.x, a.y)
+        local b_d = distance(x, y, b.x, b.y)
+        return a_d < b_d
+    end)
+    
+    return game_objects_within_area[1]
 end
 
 return Area

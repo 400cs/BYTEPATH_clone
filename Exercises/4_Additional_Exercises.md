@@ -491,10 +491,73 @@ It receives the same arguments as the queryCircleArea function but returns only 
 **my solution:**
 
 ```lua
+function Area:getClosestGameObject(x, y, radius, object_types)
+    local game_objects_within_area = self:queryCircleArea(x, y, radius, object_types)
 
+    fn.sort(game_objects_within_area, function(a, b)
+        local a_d = distance(x, y, a.x, a.y)
+        local b_d = distance(x, y, b.x, b.y)
+        return a_d < b_d
+    end)
+    
+    return game_objects_within_area[1]
+end
+```
+**answer key's solution:**
+
+This one is very similar to the previous exercise, except that instead of returning all objects inside the circle, we just return the one that's closest to the target point. To start with, we can use the function we defined in the previous exercise to get all objects that are actually inside the circle:
+
+```lua
+function Area:getClosestObject(x, y, radius, object_types)
+    local objects = self:queryCircleArea(x, y, radius, object_types)
+end
+```
+Now what we need to do is to somehow sort this table so that the first objects in it are closer and the last ones are further away. An easy way to do that is using table.sort:
+
+ ```lua
+function Area:getClosestObject(x, y, radius, object_types)
+    local objects = self:queryCircleArea(x, y, radius, object_types)
+    table.sort(objects, function(a, b)
+        local da = distance(x, y, a.x, a.y)
+        local db = distance(x, y, b.x, b.y)
+        return da < db
+    end)
+end
+```
+And so with this, we will place objects that have a smaller distance from the target first in the list. Since we know that closer objects are first, to get the closest one all we need to do is return the first object:
+
+```lua
+function Area:getClosestObject(x, y, radius, object_types)
+    local objects = self:queryCircleArea(x, y, radius, object_types)
+    table.sort(objects, function(a, b)
+        local da = distance(x, y, a.x, a.y)
+        local db = distance(x, y, b.x, b.y)
+        return da < db
+    end)
+    return objects[1]
+end
 ```
 
-### 63. How would you check if a method exists on an object before calling it? And how would you check if an attribute exists before using its value?
 
+### 63. How would you check if a method exists on an object before calling it? And how would you check if an attribute exists before using its value?
+Just do if `object.attribute` or `object.method`
+
+We can check if a method or attribute exists by just using a conditional. For instance, if we want to check if `self` has the attribute `damage` then we can do `if self.damage then`. If we want to check if it has the attribute `damage` and if that damage is higher than 10 then we can do `if self.damage and self.damage > 10 then`. The use of the `and` operator like this was explained in a previous exercise.
 
 ### 64. Using only one for loop, how can you write the contents of one table to another?
+```lua
+local new_table = {}
+for k, v in pairs(t) do
+    new_table[k] = v
+end
+```
+**answer key's solution:**
+
+Suppose we have table a and table b and we want to copy table a to table b. To achieve that we'd do the following:
+
+```lua
+for k, v in pairs(a) do
+    b[k] = v
+end
+```
+Using the pairs function we can go over all keys and indexes of the source table and then use those to directly set the appropriate values on the target table.
