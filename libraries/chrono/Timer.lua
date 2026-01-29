@@ -51,7 +51,9 @@ function Timer:update(dt)
                 if timer.count > 0 then
                     timer.counter = timer.counter + 1
                     if timer.counter >= timer.count then
-                        timer.after()
+                        if type(timer.after) ~= 'string' then
+                            timer.after()
+                        end
                         self.timers[tag] = nil
                     end
                 end
