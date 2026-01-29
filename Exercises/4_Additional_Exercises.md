@@ -166,9 +166,62 @@ We can use the error function to do this. I personally rarely use this function 
 
 ### 59. Create a class named `Rectangle` that draws a rectangle with some width and height at the position it was created. Create 10 instances of this class at random positions of the screen and with random widths and heights. When the d key is pressed a random instance should be deleted from the environment. When the number of instances left reaches 0, another 10 new instances should be created at random positions of the screen and with random widths and heights.
 
+```lua
+local Rectangle = GameObject:extend()
+
+function Rectangle:new(area, x, y, opts)
+    Rectangle.super.new(self, area, x, y, opts)
+    self.width, self.height = random(10, 50), random(10, 50)
+end
+
+function Rectangle:update(dt)
+    Rectangle.super.update(self, dt)
+end
+
+function Rectangle:draw()
+    love.graphics.rectangle("fill", self.x - self.width/2, self.y - self.height/2, self.width, self.height)
+end
+
+return Rectangle
+```
+
+```lua
+local RectangleRoom = Object:extend()
+
+function RectangleRoom:new()
+    self.area = Area()
+    self:createTenRandom()
+    input:bind('d', 'removeRectangle')
+end
+
+function RectangleRoom:update(dt)
+    if input:pressed('removeRectangle') then
+        table.remove(self.area.game_objects, random(1, #self.area.game_objects))
+    end
+    if #self.area.game_objects == 0 then
+        self:createTenRandom()
+    end
+    self.area:update(dt)
+end
+
+function RectangleRoom:draw()
+    self.area:draw()
+    -- love.graphics.rectangle('fill', 400 - 100/2, 300 - 50/2, 100, 50)
+end
+
+function RectangleRoom:createTenRandom()
+    for i=1,10 do
+        self.area:addGameObject('Rectangle',random(0,800), random(0,600))
+    end
+end
+
+return RectangleRoom
+```
 
 ### 60. Create a class named `Circle` that draws a circle with some radius at the position it was created. Create 10 instances of this class at random positions of the screen with random radius, and also with an interval of 0.25 seconds between the creation of each instance. After all instances are created (so after 2.5 seconds) start deleting once random instance every [0.5, 1] second (a random number between 0.5 and 1). After all instances are deleted, repeat the entire process of recreation of the 10 instances and their eventual deletion. This process should repeat forever.
+```lua
 
+```
 
 ### 61. Create a `queryCircleArea` function inside the Area class that works as follows:
 ```lua

@@ -1,3 +1,4 @@
+---@diagnostic disable: lowercase-global, undefined-field, redundant-parameter
 Object = require 'libraries/classic/classic' --global var for class library
 Input = require 'libraries/boipushy/Input' --global var for input library
 Timer = require 'libraries/chrono/Timer' --global var for timer library
@@ -20,7 +21,8 @@ function love.load()
 	input = Input()
 	
 	current_room = nil
-	gotoRoom('Stage')
+	gotoRoom('RectangleRoom')
+	--gotoRoom('Stage')
 
 	-- input:bind('f1', function() gotoRoom('CircleRoom') end)
     -- input:bind('f2', function() gotoRoom('RectangleRoom') end)
