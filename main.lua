@@ -1,4 +1,4 @@
----@diagnostic disable: lowercase-global, undefined-field, redundant-parameter
+---@diagnostic disable: lowercase-global, undefined-field, redundant-parameter, different-requires
 Object = require 'libraries/classic/classic' --global var for class library
 Input = require 'libraries/boipushy/Input' --global var for input library
 Timer = require 'libraries/chrono/Timer' --global var for timer library
@@ -9,10 +9,16 @@ require 'utils'
 
 
 function love.load()
+	love.graphics.setDefaultFilter('nearest') --pixelated look 
+	love.graphics.setLineStyle('rough') --pixelated look 
+	resize(3)
+	
+	--loads in our Classes
 	local object_files = {}
 	recursiveEnumerate('objects', object_files)
 	requireFiles(object_files)
 
+	--loads in our Scenes/Rooms
 	local room_files = {}
 	recursiveEnumerate('rooms', room_files)
 	requireFiles(room_files)
@@ -22,7 +28,6 @@ function love.load()
 	
 	current_room = nil
 	gotoRoom('Stage')
-	--gotoRoom('Stage')
 
 	-- input:bind('f1', function() gotoRoom('CircleRoom') end)
     -- input:bind('f2', function() gotoRoom('RectangleRoom') end)
@@ -41,6 +46,11 @@ end
 function gotoRoom(room_type, ...)
 	 print("Going to room: " .. room_type)
     current_room = _G[room_type](...)
+end
+
+function resize(s)
+    love.window.setMode(s*gw, s*gh) 
+    sx, sy = s, s
 end
 
 function recursiveEnumerate(folder, file_list)
@@ -70,7 +80,7 @@ function requireFiles(files)
 end
 
 -- Use this fuction when the class definitions do not return a table
--- meaning they use ex. Circle = Object:extend() instead of local Circle = Object:extend()
+-- meaning they use ex. Circle = Object:extend() instead of 'local Circle = Object:extend() return Circle'
 -- function requireFiles(files)
 --     for _, file in ipairs(files) do
 --         local file = file:sub(1, -5)

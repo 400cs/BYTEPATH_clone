@@ -1,0 +1,10 @@
+# Game Size Exercises
+### 65. Take a look at Steam's Hardware Survey in the primary resolution section. The most popular resolution, used by almost half the users on Steam is 1920x1080. This game's base resolution neatly multiplies to that. But the second most popular resolution is 1366x768. 480x270 does not multiply into that at all. What are some options available for dealing with odd resolutions once the game is fullscreened into the player's monitor?
+**Use blackbars**, maybe do something with the camera, **multiply by a non-integer**
+
+One option available is to just multiply the screen by non-integer numbers. To fit the base resolution of `480x270` in a screen size of `1366x768`, we would need to set `sx` and `sy` to be 2.84. The problem with this approach is that for different resolutions sx and sy might be different, which would lead to distortions, and even if they are the same, multiplying by a non-integer number can make the screen look off in a number of ways.
+
+Another option is to always multiply by integers but then fill the screen with borders whenever there are pixels left. For instance, suppose the user has a screen size of `1440x900` and we want to fit our game into it. We'll go to the closest possible integer multiplication, which is `1440x810` with the integer being 3, and then we'll see how many pixels are left horizontally and vertically. In this case horizontally it fits perfectly, but vertically there's about 90 pixels left. So what we do is draw the canvas offset by 45, and then draw our borders above and below it, each covering the entire size of the screen in width, and with 45 as height. The problem with this approach is that it can look a little weird.
+
+
+### 66. Pick a game you own that uses the same or a similar technique to what we're doing here (scaling a small base resolution up). Usually games that use pixel art will do that. What is that game's base resolution? How does the game deal with odd resolutions that don't fit neatly into its base resolution? Change the resolution of your desktop and run the game various times with different resolutions to see what changes and how it handles the variance.
