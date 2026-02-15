@@ -3,9 +3,11 @@ Object = require 'libraries/classic/classic' --global var for class library
 Input = require 'libraries/boipushy/Input' --global var for input library
 Timer = require 'libraries/chrono/Timer' --global var for timer library
 fn = require 'libraries/Moses/moses' --global var for table operation library
+Camera = require 'libraries/hump/camera' --slightly modified version of hump camura module with screen shake functionality
+--Camera = require 'libraries/STALKER-X/Camera'  --camera module for LÖVE w/ all in one features
 
 GameObject = require 'GameObject'
-require 'utils'
+require 'utils'	--this where all the functions that don't fit anywhere else go
 
 
 function love.load()
