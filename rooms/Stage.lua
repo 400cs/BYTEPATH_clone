@@ -2,8 +2,8 @@ local Stage = Object:extend()
 
 function Stage:new()
     self.area = Area(self)
-    self.main_canvas = love.graphics.newCanvas(gw, gh)
-    self.timer = Timer()
+    self.main_canvas = love.graphics.newCanvas(gw, gh)  -- our global width & height  
+    self.timer = Timer()                                -- gw = 480, gh = 270
 
     local function process()
         self.timer:cancel('create_process')
