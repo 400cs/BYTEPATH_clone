@@ -4,7 +4,8 @@ function Stage:new()
     self.area = Area(self)
     self.main_canvas = love.graphics.newCanvas(gw, gh)  -- our global width & height  
     self.timer = Timer()                                -- gw = 480, gh = 270
-
+    camera:setFollowStyle('LOCKON')
+    camera:setFollowLerp(0.1)
     local function process()
         self.timer:cancel('create_process')
         self.timer:cancel('remove_process')
@@ -27,6 +28,10 @@ function Stage:new()
 end
 
 function Stage:update(dt)
+    -- camera:setFollowStyle('LOCKON')
+    -- camera:setFollowLerp(0.1)
+    camera:follow(gw/2,  gh/2)
+    
     self.area:update(dt)
     self.timer:update(dt)
 end
@@ -34,8 +39,10 @@ end
 function Stage:draw()
     love.graphics.setCanvas(self.main_canvas) --redirect all drawing operations to the currently set canvas
     love.graphics.clear()
+    camera:attach()
         love.graphics.circle('line', gw/2,  gh/2, 50)
         self.area:draw()
+    camera:detach()
     love.graphics.setCanvas() --unsets the target canvas so that drawing operations aren't redirected to it
 
     love.graphics.setColor(255, 255, 255, 255)

@@ -3,8 +3,8 @@ Object = require 'libraries/classic/classic' --global var for class library
 Input = require 'libraries/boipushy/Input' --global var for input library
 Timer = require 'libraries/chrono/Timer' --global var for timer library
 fn = require 'libraries/Moses/moses' --global var for table operation library
-Camera = require 'libraries/hump/camera' --slightly modified version of hump camura module with screen shake functionality
---Camera = require 'libraries/STALKER-X/Camera'  --camera module for LÖVE w/ all in one features
+--Camera = require 'libraries/hump/camera' --slightly modified version of hump camura module with screen shake functionality
+Camera = require 'libraries/STALKER-X/Camera'  --camera module for LÖVE w/ all in one features
 
 GameObject = require 'GameObject'
 require 'utils'	--this where all the functions that don't fit anywhere else go
@@ -27,6 +27,9 @@ function love.load()
 	
 	timer = Timer()
 	input = Input()
+
+	camera = Camera(240, 135, 480, 270)	-- to make the camera work with pixel camera we need to tell it what's the base resolution
+	input:bind('f3', function() camera:shake(4, 1, 60) end)
 	
 	current_room = nil
 	gotoRoom('Stage')
@@ -38,6 +41,7 @@ end
 	
 function love.update(dt)
 	timer:update(dt)
+	camera:update(dt)
 	if current_room then current_room:update(dt) end
 end
 
