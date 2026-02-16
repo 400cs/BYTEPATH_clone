@@ -29,7 +29,6 @@ function love.load()
 	input = Input()
 
 	camera = Camera(240, 135, 480, 270)	-- to make the camera work with pixel camera we need to tell it what's the base resolution
-	input:bind('f3', function() camera:shake(4, 1, 60) end)
 	
 	current_room = nil
 	gotoRoom('Stage')

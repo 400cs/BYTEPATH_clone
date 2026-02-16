@@ -1,4 +1,4 @@
-local Player = GameObject:extent()
+local Player = GameObject:extend()
 
 function Player:new(area, x, y, opts)
     Player.super.new(self, area, x, y, opts)
@@ -9,7 +9,7 @@ function Player:update(dt)
 end
 
 function Player:draw()
-
+    love.graphics.circle('line', self.x, self.y, 25)
 end
 
 return Player
